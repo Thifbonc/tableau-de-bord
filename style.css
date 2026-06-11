@@ -78,14 +78,16 @@ html, body {
 /* ---------- Layout ---------- */
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 720px) 340px;
-  justify-content: start;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
   padding: 8px 28px 28px;
   align-items: start;
 }
+.calendar-panel { grid-column: span 2; }
+.sidebar { grid-column: span 2; }
 @media (max-width: 960px) {
   .layout { grid-template-columns: 1fr; }
+  .calendar-panel, .sidebar { grid-column: auto; }
 }
 
 .panel {
