@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notre tableau de bord</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- FullCalendar (agenda) -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <!-- Firebase (partage temps réel) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Notre tableau de bord</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="weather" id="weather">
+        <span class="weather-icon" id="weatherIcon">⛅</span>
+        <span id="weatherTemp">—°</span>
+        <span class="weather-city" id="weatherCity"></span>
+      </div>
+      <div class="clock">
+        <div class="time" id="clockTime">--:--</div>
+        <div class="date" id="clockDate">—</div>
+      </div>
+    </div>
+  </header>
+
+  <div id="connectionBanner" class="banner hidden"></div>
+
+  <main class="layout">
+    <!-- Colonne principale : agenda -->
+    <section class="panel calendar-panel">
+      <div class="panel-head">
+        <h2>📅 Agenda partagé</h2>
+        <span class="hint">Clique-glisse pour créer un créneau · clique un créneau pour le modifier · glisse pour déplacer</span>
+      </div>
+      <div id="calendar"></div>
+    </section>
+
+    <!-- Colonne latérale -->
+    <aside class="sidebar">
+      <section class="panel notes-panel">
+        <div class="panel-head">
+          <h2>📝 Notes / À faire</h2>
+          <span class="hint" id="notesStatus"></span>
+        </div>
+        <textarea id="notes" placeholder="Liste de courses, idées, tâches communes…&#10;- [ ] exemple de tâche"></textarea>
+      </section>
+
+      <section class="panel bookmarks-panel">
+        <div class="panel-head">
+          <h2>🔖 Liens</h2>
+          <button class="btn-mini" id="addBookmarkBtn" title="Ajouter un lien">+</button>
+        </div>
+        <div class="bookmarks" id="bookmarks"></div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>Tableau de bord partagé · données synchronisées en temps réel</span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
