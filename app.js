@@ -105,7 +105,7 @@
     for (let i = 0; i < tries; i++) {
       try {
         const ctrl = new AbortController();
-        const to = setTimeout(() => ctrl.abort(), 8000);
+        const to = setTimeout(() => ctrl.abort(), 25000);
         const r = await fetch(url, { signal: ctrl.signal });
         clearTimeout(to);
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -118,8 +118,8 @@
   }
 
   async function loadWeather() {
-    // Coordonnées par défaut : Paris (évite que tout casse si le géocodage échoue)
-    let lat = 48.8566, lon = 2.3522, label = "Paris";
+    // Coordonnées par défaut : Lyon (évite que tout casse si le géocodage échoue)
+    let lat = 45.7640, lon = 4.8357, label = "Lyon";
     const city = (typeof WEATHER_CITY !== "undefined" && WEATHER_CITY) ? WEATHER_CITY : "";
     if (city) {
       try {
@@ -131,17 +131,42 @@
           lon = geo.results[0].longitude;
           label = geo.results[0].name;
         }
-      } catch (e) { /* on garde Paris par défaut */ }
+      } catch (e) { /* on garde Lyon par défaut */ }
     }
     try {
       const w = await fetchJSON(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+        `&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_days=2&timezone=auto`
       );
       const t = Math.round(w.current.temperature_2m);
       const code = w.current.weather_code;
       document.getElementById("weatherTemp").textContent = t + "°";
       document.getElementById("weatherIcon").textContent = WMO[code] || "🌡️";
       document.getElementById("weatherCity").textContent = label || "";
+
+      // Prévisions des 2 prochaines heures
+      const fcEl = document.getElementById("weatherForecast");
+      fcEl.innerHTML = "";
+      const times = w.hourly && w.hourly.time;
+      if (times) {
+        const nowTs = new Date(w.current.time).getTime();
+        let idx = times.findIndex((tt) => new Date(tt).getTime() > nowTs);
+        if (idx < 0) idx = 0;
+        for (let k = 0; k < 2; k++) {
+          const i = idx + k;
+          if (i >= times.length) break;
+          const h = new Date(times[i]).getHours();
+          const temp = Math.round(w.hourly.temperature_2m[i]);
+          const ico = WMO[w.hourly.weather_code[i]] || "🌡️";
+          const span = document.createElement("span");
+          span.className = "fc-hour";
+          span.innerHTML =
+            `<span class="fc-h">${h}h</span>` +
+            `<span class="fc-ico">${ico}</span>` +
+            `<span>${temp}°</span>`;
+          fcEl.appendChild(span);
+        }
+      }
     } catch (e) {
       document.getElementById("weatherCity").textContent = "météo indispo";
       setTimeout(loadWeather, 15000); // re-essaie dans 15 s

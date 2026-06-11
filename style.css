@@ -42,12 +42,18 @@ html, body {
 
 .topbar-right { display: flex; align-items: center; gap: 22px; }
 .weather {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 12px;
   background: var(--panel); border: 1px solid var(--border);
-  padding: 8px 14px; border-radius: 999px; font-weight: 600;
+  padding: 6px 14px; border-radius: 18px; font-weight: 600;
 }
+.weather-now { display: flex; align-items: center; gap: 8px; }
 .weather-icon { font-size: 20px; }
 .weather-city { color: var(--muted); font-weight: 500; font-size: 13px; }
+.weather-forecast { display: flex; align-items: center; gap: 10px; }
+.weather-forecast:not(:empty) { padding-left: 12px; border-left: 1px solid var(--border); }
+.fc-hour { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.fc-hour .fc-h { color: var(--text); font-weight: 600; }
+.fc-hour .fc-ico { font-size: 15px; }
 .clock { text-align: right; }
 .clock .time { font-size: 22px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
 .clock .date { font-size: 12px; color: var(--muted); text-transform: capitalize; }

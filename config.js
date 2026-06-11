@@ -20,5 +20,5 @@ const firebaseConfig = {
   appId:         "1:34645571738:web:15e26009696b45f8a78723"
 };
 
-// Ville affichée pour la météo (laisse vide pour utiliser ta position GPS si autorisée)
-const WEATHER_CITY = "Paris";
+// Ville affichée pour la météo
+const WEATHER_CITY = "Lyon";
