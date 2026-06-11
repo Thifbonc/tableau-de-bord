@@ -11,13 +11,13 @@
 // ============================================================
 
 const firebaseConfig = {
-  apiKey:        "REMPLACE_MOI",
-  authDomain:    "REMPLACE_MOI.firebaseapp.com",
-  databaseURL:   "https://REMPLACE_MOI-default-rtdb.firebaseio.com",
-  projectId:     "REMPLACE_MOI",
-  storageBucket: "REMPLACE_MOI.appspot.com",
-  messagingSenderId: "REMPLACE_MOI",
-  appId:         "REMPLACE_MOI"
+  apiKey:        "AIzaSyAiY5ThKPC7JTzZmsO495zdYLqQIZCBopY",
+  authDomain:    "tableau-de-bord-46c49.firebaseapp.com",
+  databaseURL:   "https://tableau-de-bord-46c49-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:     "tableau-de-bord-46c49",
+  storageBucket: "tableau-de-bord-46c49.firebasestorage.app",
+  messagingSenderId: "34645571738",
+  appId:         "1:34645571738:web:15e26009696b45f8a78723"
 };
 
 // Ville affichée pour la météo (laisse vide pour utiliser ta position GPS si autorisée)
