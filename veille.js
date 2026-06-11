@@ -56,13 +56,40 @@
   const vStore = store("veille");
   const grid = document.getElementById("veilleGrid");
 
+  // ----- Catégories (calques) -----
+  const VEILLE_CATS = [
+    { id: "intl",    label: "Médias internationaux", icon: "🌍", color: "#6c8cff" },
+    { id: "afrique", label: "Médias africains",      icon: "🌍", color: "#f0a35e" },
+    { id: "reseaux", label: "Réseaux sociaux",       icon: "💬", color: "#4dd6c1" },
+  ];
+  const catOf = (id) => VEILLE_CATS.find((c) => c.id === id) || VEILLE_CATS[0];
+
   // ----- Modal -----
   const modal = document.getElementById("veilleModal");
   const elTitle = document.getElementById("vTitle");
   const elUrl = document.getElementById("vUrl");
   const elNote = document.getElementById("vNote");
   const elDelete = document.getElementById("vDelete");
+  const catRow = document.getElementById("vCatRow");
   let editingKey = null;
+  let selectedCat = "intl";
+
+  VEILLE_CATS.forEach((c) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "cat-chip";
+    chip.dataset.cat = c.id;
+    chip.style.color = c.color;
+    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span><span style="color:var(--text)">${c.label}</span>`;
+    chip.addEventListener("click", () => selectCat(c.id));
+    catRow.appendChild(chip);
+  });
+  function selectCat(id) {
+    selectedCat = id;
+    catRow.querySelectorAll(".cat-chip").forEach((ch) => {
+      ch.classList.toggle("active", ch.dataset.cat === id);
+    });
+  }
 
   function openModal(item) {
     editingKey = (item && item.key) || null;
@@ -70,6 +97,7 @@
     elTitle.value = (item && item.title) || "";
     elUrl.value = (item && item.url) || "";
     elNote.value = (item && item.note) || "";
+    selectCat((item && item.category) || "intl");
     elDelete.classList.toggle("hidden", !editingKey);
     modal.classList.remove("hidden");
     setTimeout(() => elTitle.focus(), 50);
@@ -89,7 +117,7 @@
     let url = elUrl.value.trim();
     if (!title) { elTitle.focus(); return; }
     if (url && !/^https?:\/\//i.test(url)) url = "https://" + url;
-    const data = { title, url, note: elNote.value.trim(), ts: Date.now() };
+    const data = { title, url, note: elNote.value.trim(), category: selectedCat, ts: Date.now() };
     if (editingKey) vStore.update(editingKey, data);
     else vStore.push(data);
     closeModal();
@@ -100,65 +128,89 @@
     closeModal();
   });
 
-  // ----- Rendu de la liste -----
+  // Construit une carte d'article
+  function buildCard(key, it) {
+    let host = "";
+    try { host = it.url ? new URL(it.url).hostname.replace(/^www\./, "") : ""; } catch (e) {}
+
+    const card = document.createElement("div");
+    card.className = "veille-card";
+    card.style.borderTopColor = catOf(it.category).color;
+
+    const head = document.createElement("div");
+    head.className = "vc-head";
+    const fav = document.createElement("img");
+    fav.className = "vc-fav";
+    fav.src = host ? `https://www.google.com/s2/favicons?domain=${host}&sz=32` : "";
+    fav.alt = "";
+    const h = document.createElement("h3");
+    h.textContent = it.title || host || "Sans titre";
+    head.appendChild(fav);
+    head.appendChild(h);
+    card.appendChild(head);
+
+    if (it.note) {
+      const note = document.createElement("p");
+      note.className = "vc-note";
+      note.textContent = it.note;
+      card.appendChild(note);
+    }
+
+    const foot = document.createElement("div");
+    foot.className = "vc-foot";
+    if (it.url) {
+      const a = document.createElement("a");
+      a.href = it.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.className = "vc-open";
+      a.textContent = (host || "Ouvrir le lien") + " ↗";
+      foot.appendChild(a);
+    } else {
+      const span = document.createElement("span");
+      span.className = "hint";
+      span.textContent = "Pas de lien";
+      foot.appendChild(span);
+    }
+    const edit = document.createElement("button");
+    edit.className = "vc-edit";
+    edit.textContent = "Modifier";
+    edit.addEventListener("click", () =>
+      openModal({ key, title: it.title, url: it.url, note: it.note, category: it.category }));
+    foot.appendChild(edit);
+
+    card.appendChild(foot);
+    return card;
+  }
+
+  // ----- Rendu groupé par catégorie (calques) -----
   vStore.onValue((val) => {
     grid.innerHTML = "";
-    if (!val) {
-      grid.innerHTML = '<p class="hint">Aucun article pour l\'instant — clique sur « + Ajouter un article ».</p>';
-      return;
-    }
-    const keys = Object.keys(val).sort((a, b) => (val[b].ts || 0) - (val[a].ts || 0));
-    keys.forEach((key) => {
-      const it = val[key];
-      let host = "";
-      try { host = it.url ? new URL(it.url).hostname.replace(/^www\./, "") : ""; } catch (e) {}
+    const items = val || {};
+    const keys = Object.keys(items).sort((a, b) => (items[b].ts || 0) - (items[a].ts || 0));
 
-      const card = document.createElement("div");
-      card.className = "veille-card";
+    VEILLE_CATS.forEach((cat) => {
+      const section = document.createElement("section");
+      section.className = "veille-section";
 
-      const head = document.createElement("div");
-      head.className = "vc-head";
-      const fav = document.createElement("img");
-      fav.className = "vc-fav";
-      fav.src = host ? `https://www.google.com/s2/favicons?domain=${host}&sz=32` : "";
-      fav.alt = "";
-      const h = document.createElement("h3");
-      h.textContent = it.title || host || "Sans titre";
-      head.appendChild(fav);
-      head.appendChild(h);
+      const title = document.createElement("h2");
+      title.className = "veille-section-title";
+      title.innerHTML =
+        `<span class="vs-dot" style="background:${cat.color}"></span>` +
+        `${cat.icon} ${cat.label}`;
+      section.appendChild(title);
 
-      if (it.note) {
-        const note = document.createElement("p");
-        note.className = "vc-note";
-        note.textContent = it.note;
-        card.appendChild(head);
-        card.appendChild(note);
+      const catKeys = keys.filter((k) => (items[k].category || "intl") === cat.id);
+      if (catKeys.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "hint";
+        empty.textContent = "Aucun article — clique sur « + Ajouter un article » et choisis cette catégorie.";
+        section.appendChild(empty);
       } else {
-        card.appendChild(head);
+        const cards = document.createElement("div");
+        cards.className = "veille-grid";
+        catKeys.forEach((k) => cards.appendChild(buildCard(k, items[k])));
+        section.appendChild(cards);
       }
-
-      const foot = document.createElement("div");
-      foot.className = "vc-foot";
-      if (it.url) {
-        const a = document.createElement("a");
-        a.href = it.url; a.target = "_blank"; a.rel = "noopener noreferrer";
-        a.className = "vc-open";
-        a.textContent = (host || "Ouvrir le lien") + " ↗";
-        foot.appendChild(a);
-      } else {
-        const span = document.createElement("span");
-        span.className = "hint";
-        span.textContent = "Pas de lien";
-        foot.appendChild(span);
-      }
-      const edit = document.createElement("button");
-      edit.className = "vc-edit";
-      edit.textContent = "Modifier";
-      edit.addEventListener("click", () => openModal({ key, title: it.title, url: it.url, note: it.note }));
-      foot.appendChild(edit);
-
-      card.appendChild(foot);
-      grid.appendChild(card);
+      grid.appendChild(section);
     });
   });
 })();

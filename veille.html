@@ -31,7 +31,7 @@
         <button class="btn-primary" id="addVeilleBtn">+ Ajouter un article</button>
       </div>
       <p class="hint" style="margin-top:-6px">Articles, liens et ressources à suivre — partagés et modifiables par tous.</p>
-      <div class="veille-grid" id="veilleGrid"></div>
+      <div class="veille-sections" id="veilleGrid"></div>
     </section>
   </main>
 
@@ -45,8 +45,12 @@
       <div class="modal-body">
         <label class="field">
           <span>Titre</span>
-          <input type="text" id="vTitle" placeholder="Ex. Article sur l'IA…" autocomplete="off" />
+          <input type="text" id="vTitle" placeholder="Ex. Le Monde, BBC, RFI…" autocomplete="off" />
         </label>
+        <div class="field">
+          <span>Catégorie</span>
+          <div class="cat-row" id="vCatRow"></div>
+        </div>
         <label class="field">
           <span>Lien (URL)</span>
           <input type="text" id="vUrl" placeholder="https://…" autocomplete="off" />
