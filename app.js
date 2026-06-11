@@ -99,27 +99,44 @@
     80: "🌦️", 81: "🌧️", 82: "⛈️",
     95: "⛈️", 96: "⛈️", 99: "⛈️",
   };
+  // fetch JSON avec timeout + une nouvelle tentative
+  async function fetchJSON(url, tries) {
+    tries = tries || 2;
+    for (let i = 0; i < tries; i++) {
+      try {
+        const ctrl = new AbortController();
+        const to = setTimeout(() => ctrl.abort(), 8000);
+        const r = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(to);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return await r.json();
+      } catch (e) {
+        if (i === tries - 1) throw e;
+        await new Promise((res) => setTimeout(res, 1200));
+      }
+    }
+  }
+
   async function loadWeather() {
-    try {
-      let lat, lon, label;
-      const city = (typeof WEATHER_CITY !== "undefined" && WEATHER_CITY) ? WEATHER_CITY : "";
-      if (city) {
-        const geo = await fetch(
+    // Coordonnées par défaut : Paris (évite que tout casse si le géocodage échoue)
+    let lat = 48.8566, lon = 2.3522, label = "Paris";
+    const city = (typeof WEATHER_CITY !== "undefined" && WEATHER_CITY) ? WEATHER_CITY : "";
+    if (city) {
+      try {
+        const geo = await fetchJSON(
           `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=fr`
-        ).then((r) => r.json());
+        );
         if (geo.results && geo.results[0]) {
           lat = geo.results[0].latitude;
           lon = geo.results[0].longitude;
           label = geo.results[0].name;
         }
-      }
-      if (lat == null) {
-        // fallback Paris
-        lat = 48.8566; lon = 2.3522; label = "Paris";
-      }
-      const w = await fetch(
+      } catch (e) { /* on garde Paris par défaut */ }
+    }
+    try {
+      const w = await fetchJSON(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`
-      ).then((r) => r.json());
+      );
       const t = Math.round(w.current.temperature_2m);
       const code = w.current.weather_code;
       document.getElementById("weatherTemp").textContent = t + "°";
@@ -127,6 +144,7 @@
       document.getElementById("weatherCity").textContent = label || "";
     } catch (e) {
       document.getElementById("weatherCity").textContent = "météo indispo";
+      setTimeout(loadWeather, 15000); // re-essaie dans 15 s
     }
   }
   loadWeather();
