@@ -211,11 +211,9 @@
 
   // Catégories de couleurs
   const CATEGORIES = [
-    { id: "perso",     label: "Perso",     color: "#6c8cff" },
-    { id: "boulot",    label: "Boulot",    color: "#b07cff" },
-    { id: "sport",     label: "Sport",     color: "#4dd6c1" },
-    { id: "important", label: "Important", color: "#ff6b81" },
-    { id: "autre",     label: "Autre",     color: "#9aa3c7" },
+    { id: "reunion",     label: "Réunion",     color: "#6c8cff" },
+    { id: "deplacement", label: "Déplacement", color: "#f0a35e" },
+    { id: "autres",      label: "Autres",      color: "#4dd6c1" },
   ];
   const catColor = (id) => (CATEGORIES.find((c) => c.id === id) || CATEGORIES[0]).color;
 
@@ -237,7 +235,7 @@
   const timeGrid = document.querySelector(".time-grid");
 
   let editingKey = null;     // null = création
-  let selectedCat = "perso";
+  let selectedCat = "reunion";
 
   // Construit les pastilles de catégorie
   CATEGORIES.forEach((c) => {
@@ -273,7 +271,7 @@
     elStartTime.value = timeStr(start);
     elEndDate.value = dateStr(end);
     elEndTime.value = timeStr(end);
-    selectCat(opts.category || "perso");
+    selectCat(opts.category || "reunion");
     toggleAllDay();
     elDelete.classList.toggle("hidden", !editingKey);
     modal.classList.remove("hidden");
@@ -384,7 +382,7 @@
           allDay: !!e.allDay,
           backgroundColor: color,
           borderColor: color,
-          extendedProps: { category: e.category || "perso" },
+          extendedProps: { category: e.category || "reunion" },
         });
       });
     }

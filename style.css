@@ -183,7 +183,7 @@ html, body {
   z-index: 100; padding: 16px;
 }
 .modal {
-  width: 100%; max-width: 560px;
+  width: 100%; max-width: 600px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 18px;
@@ -226,15 +226,12 @@ html, body {
 .row-check input { width: 16px; height: 16px; accent-color: var(--accent); }
 .row-check span { font-size: 14px; }
 
-.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.time-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
 .time-grid .field { min-width: 0; }
-.dt { display: flex; gap: 6px; }
+.dt { display: flex; gap: 8px; }
 .dt input[type="date"] { flex: 1 1 auto; min-width: 0; }
-.dt input[type="time"] { flex: 0 0 96px; width: 96px; }
+.dt input[type="time"] { flex: 0 0 110px; width: 110px; }
 .time-grid.allday .dt input[type="time"] { display: none; }
-@media (max-width: 520px) {
-  .time-grid { grid-template-columns: 1fr; }
-}
 
 .cat-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .cat-chip {
