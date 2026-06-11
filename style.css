@@ -183,7 +183,7 @@ html, body {
   z-index: 100; padding: 16px;
 }
 .modal {
-  width: 100%; max-width: 440px;
+  width: 100%; max-width: 560px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 18px;
@@ -227,9 +227,14 @@ html, body {
 .row-check span { font-size: 14px; }
 
 .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.time-grid .field { min-width: 0; }
 .dt { display: flex; gap: 6px; }
-.dt input[type="time"] { max-width: 92px; }
+.dt input[type="date"] { flex: 1 1 auto; min-width: 0; }
+.dt input[type="time"] { flex: 0 0 96px; width: 96px; }
 .time-grid.allday .dt input[type="time"] { display: none; }
+@media (max-width: 520px) {
+  .time-grid { grid-template-columns: 1fr; }
+}
 
 .cat-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .cat-chip {
