@@ -40,6 +40,17 @@ html, body {
 }
 .brand h1 { font-size: 20px; margin: 0; font-weight: 700; letter-spacing: 0.2px; }
 
+.nav { display: flex; gap: 6px; margin-left: 18px; }
+.nav-link {
+  text-decoration: none; color: var(--muted);
+  font-size: 14px; font-weight: 500;
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid transparent;
+  transition: color .15s, background .15s, border-color .15s;
+}
+.nav-link:hover { color: var(--text); background: var(--panel); }
+.nav-link.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
 .topbar-right { display: flex; align-items: center; gap: 22px; }
 .weather {
   display: flex; align-items: center; gap: 12px;
@@ -285,6 +296,40 @@ html, body {
 .fc-event .fc-event-time { font-weight: 600; opacity: .9; }
 .fc .fc-daygrid-event-dot { display: none; }
 .fc-daygrid-event { border-radius: 6px; padding: 1px 5px; }
+
+/* ---------- Page Veille ---------- */
+.page { padding: 8px 28px 28px; max-width: 1100px; }
+.veille-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+.veille-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.vc-head { display: flex; align-items: center; gap: 10px; }
+.vc-fav { width: 20px; height: 20px; border-radius: 5px; flex: 0 0 auto; }
+.vc-head h3 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.3; }
+.vc-note { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; flex: 1; }
+.vc-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; }
+.vc-open { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
+.vc-open:hover { text-decoration: underline; }
+.vc-edit {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.vc-edit:hover { color: var(--text); border-color: var(--accent); }
+.modal textarea {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); padding: 10px 12px; font-family: inherit; font-size: 14px;
+  width: 100%; resize: vertical; line-height: 1.5;
+}
+.modal textarea:focus { outline: none; border-color: var(--accent); }
 
 /* ---------- Footer ---------- */
 .footer {

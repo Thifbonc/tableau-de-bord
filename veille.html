@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veille · Notre tableau de bord</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Notre tableau de bord</h1>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="veille.html" class="nav-link active">Veille</a>
+      </nav>
+    </div>
+  </header>
+
+  <div id="connectionBanner" class="banner hidden"></div>
+
+  <main class="page">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>🔭 Veille partagée</h2>
+        <button class="btn-primary" id="addVeilleBtn">+ Ajouter un article</button>
+      </div>
+      <p class="hint" style="margin-top:-6px">Articles, liens et ressources à suivre — partagés et modifiables par tous.</p>
+      <div class="veille-grid" id="veilleGrid"></div>
+    </section>
+  </main>
+
+  <!-- Fenêtre d'ajout / édition d'un article de veille -->
+  <div class="modal-overlay hidden" id="veilleModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="vModalTitle">Nouvel article</h3>
+        <button class="modal-close" id="vModalClose" title="Fermer">×</button>
+      </div>
+      <div class="modal-body">
+        <label class="field">
+          <span>Titre</span>
+          <input type="text" id="vTitle" placeholder="Ex. Article sur l'IA…" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>Lien (URL)</span>
+          <input type="text" id="vUrl" placeholder="https://…" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>Note (facultatif)</span>
+          <textarea id="vNote" rows="3" placeholder="Pourquoi c'est intéressant, à lire avant le…"></textarea>
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-danger hidden" id="vDelete">Supprimer</button>
+        <span class="spacer"></span>
+        <button class="btn-ghost" id="vCancel">Annuler</button>
+        <button class="btn-primary" id="vSave">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>Tableau de bord partagé · données synchronisées en temps réel</span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="veille.js"></script>
+</body>
+</html>
