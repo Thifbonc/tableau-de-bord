@@ -78,7 +78,8 @@ html, body {
 /* ---------- Layout ---------- */
 .layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 720px) 340px;
+  justify-content: start;
   gap: 20px;
   padding: 8px 28px 28px;
   align-items: start;
