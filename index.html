@@ -64,6 +64,55 @@
     </aside>
   </main>
 
+  <!-- Fenêtre d'édition d'un créneau (façon Google Agenda) -->
+  <div class="modal-overlay hidden" id="eventModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="modalTitle">Nouveau créneau</h3>
+        <button class="modal-close" id="modalClose" title="Fermer">×</button>
+      </div>
+      <div class="modal-body">
+        <label class="field">
+          <span>Titre</span>
+          <input type="text" id="evTitle" placeholder="Ex. Réunion, Sport, Dîner…" autocomplete="off" />
+        </label>
+
+        <label class="row-check">
+          <input type="checkbox" id="evAllDay" />
+          <span>Journée entière</span>
+        </label>
+
+        <div class="time-grid">
+          <label class="field">
+            <span>Début</span>
+            <div class="dt">
+              <input type="date" id="evStartDate" />
+              <input type="time" id="evStartTime" />
+            </div>
+          </label>
+          <label class="field">
+            <span>Fin</span>
+            <div class="dt">
+              <input type="date" id="evEndDate" />
+              <input type="time" id="evEndTime" />
+            </div>
+          </label>
+        </div>
+
+        <div class="field">
+          <span>Catégorie</span>
+          <div class="cat-row" id="catRow"></div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-danger hidden" id="evDelete">Supprimer</button>
+        <span class="spacer"></span>
+        <button class="btn-ghost" id="evCancel">Annuler</button>
+        <button class="btn-primary" id="evSave">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <span>Tableau de bord partagé · données synchronisées en temps réel</span>
   </footer>

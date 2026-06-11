@@ -205,64 +205,152 @@
   });
 
   /* =================================================================
-     AGENDA (FullCalendar) PARTAGÉ
+     AGENDA (FullCalendar) PARTAGÉ — avec catégories couleurs + modal
      ================================================================= */
   const evStore = store("events");
-  let suppressReload = false; // évite le clignotement après une modif locale
 
+  // Catégories de couleurs
+  const CATEGORIES = [
+    { id: "perso",     label: "Perso",     color: "#6c8cff" },
+    { id: "boulot",    label: "Boulot",    color: "#b07cff" },
+    { id: "sport",     label: "Sport",     color: "#4dd6c1" },
+    { id: "important", label: "Important", color: "#ff6b81" },
+    { id: "autre",     label: "Autre",     color: "#9aa3c7" },
+  ];
+  const catColor = (id) => (CATEGORIES.find((c) => c.id === id) || CATEGORIES[0]).color;
+
+  // ----- Helpers date/heure -----
+  const pad = (n) => String(n).padStart(2, "0");
+  const dateStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const timeStr = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+  // ----- Éléments de la modal -----
+  const modal = document.getElementById("eventModal");
+  const elTitle = document.getElementById("evTitle");
+  const elAllDay = document.getElementById("evAllDay");
+  const elStartDate = document.getElementById("evStartDate");
+  const elStartTime = document.getElementById("evStartTime");
+  const elEndDate = document.getElementById("evEndDate");
+  const elEndTime = document.getElementById("evEndTime");
+  const elDelete = document.getElementById("evDelete");
+  const catRow = document.getElementById("catRow");
+  const timeGrid = document.querySelector(".time-grid");
+
+  let editingKey = null;     // null = création
+  let selectedCat = "perso";
+
+  // Construit les pastilles de catégorie
+  CATEGORIES.forEach((c) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "cat-chip";
+    chip.dataset.cat = c.id;
+    chip.style.color = c.color;
+    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span><span style="color:var(--text)">${c.label}</span>`;
+    chip.addEventListener("click", () => selectCat(c.id));
+    catRow.appendChild(chip);
+  });
+  function selectCat(id) {
+    selectedCat = id;
+    catRow.querySelectorAll(".cat-chip").forEach((ch) => {
+      ch.classList.toggle("active", ch.dataset.cat === id);
+    });
+  }
+
+  function toggleAllDay() {
+    timeGrid.classList.toggle("allday", elAllDay.checked);
+  }
+  elAllDay.addEventListener("change", toggleAllDay);
+
+  function openModal(opts) {
+    editingKey = opts.key || null;
+    document.getElementById("modalTitle").textContent = editingKey ? "Modifier le créneau" : "Nouveau créneau";
+    elTitle.value = opts.title || "";
+    elAllDay.checked = !!opts.allDay;
+    const start = opts.start || new Date();
+    const end = opts.end || new Date(start.getTime() + 60 * 60 * 1000);
+    elStartDate.value = dateStr(start);
+    elStartTime.value = timeStr(start);
+    elEndDate.value = dateStr(end);
+    elEndTime.value = timeStr(end);
+    selectCat(opts.category || "perso");
+    toggleAllDay();
+    elDelete.classList.toggle("hidden", !editingKey);
+    modal.classList.remove("hidden");
+    setTimeout(() => elTitle.focus(), 50);
+  }
+  function closeModal() { modal.classList.add("hidden"); }
+
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("evCancel").addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
+  });
+
+  document.getElementById("evSave").addEventListener("click", () => {
+    const title = elTitle.value.trim();
+    if (!title) { elTitle.focus(); return; }
+    const allDay = elAllDay.checked;
+    let start, end;
+    if (allDay) {
+      start = elStartDate.value;
+      end = elEndDate.value || null;
+    } else {
+      start = `${elStartDate.value}T${elStartTime.value || "00:00"}:00`;
+      end = elEndDate.value ? `${elEndDate.value}T${elEndTime.value || "00:00"}:00` : null;
+    }
+    const data = { title, start, end, allDay, category: selectedCat, color: catColor(selectedCat) };
+    if (editingKey) evStore.update(editingKey, data);
+    else evStore.push(data);
+    closeModal();
+  });
+
+  elDelete.addEventListener("click", () => {
+    if (editingKey) evStore.remove(editingKey);
+    closeModal();
+  });
+
+  // ----- Calendrier -----
   const calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
     locale: "fr",
     firstDay: 1,
-    initialView: "dayGridMonth",
+    initialView: "timeGridWeek",
     height: "auto",
+    nowIndicator: true,
+    scrollTime: "08:00:00",
+    slotLabelFormat: { hour: "2-digit", minute: "2-digit", hour12: false },
+    eventTimeFormat: { hour: "2-digit", minute: "2-digit", hour12: false },
     headerToolbar: {
       left: "prev,next today",
       center: "title",
-      right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+      right: "timeGridDay,timeGridWeek,dayGridMonth,listWeek",
     },
     buttonText: { today: "aujourd'hui", month: "mois", week: "semaine", day: "jour", list: "liste" },
     selectable: true,
     editable: true,
-    nowIndicator: true,
     dayMaxEvents: true,
 
-    // Créer un créneau en sélectionnant une plage
+    // Sélection d'une plage -> ouvre la modal en création
     select: function (info) {
-      const title = prompt("Titre du créneau :");
-      if (title) {
-        evStore.push({
-          title: title,
-          start: info.startStr,
-          end: info.endStr,
-          allDay: info.allDay,
-        });
-      }
+      openModal({ start: info.start, end: info.end, allDay: info.allDay });
       calendar.unselect();
     },
 
-    // Cliquer un créneau : renommer ou supprimer
+    // Clic sur un créneau -> ouvre la modal en édition
     eventClick: function (info) {
-      const choice = prompt(
-        `Modifier "${info.event.title}"\n\n` +
-        `→ Tape un nouveau titre pour renommer\n` +
-        `→ Tape SUPPR pour supprimer\n` +
-        `→ Laisse vide pour annuler`,
-        info.event.title
-      );
-      if (choice === null || choice.trim() === "") return;
-      const key = info.event.id;
-      if (choice.trim().toUpperCase() === "SUPPR") {
-        suppressReload = true;
-        evStore.remove(key);
-      } else {
-        suppressReload = true;
-        evStore.update(key, { title: choice.trim() });
-      }
+      openModal({
+        key: info.event.id,
+        title: info.event.title,
+        start: info.event.start,
+        end: info.event.end,
+        allDay: info.event.allDay,
+        category: info.event.extendedProps.category,
+      });
     },
 
-    // Déplacer un créneau
+    // Glisser-déposer
     eventDrop: function (info) {
-      suppressReload = true;
       evStore.update(info.event.id, {
         start: info.event.startStr,
         end: info.event.endStr ? info.event.endStr : null,
@@ -270,9 +358,8 @@
       });
     },
 
-    // Redimensionner un créneau
+    // Redimensionner
     eventResize: function (info) {
-      suppressReload = true;
       evStore.update(info.event.id, {
         start: info.event.startStr,
         end: info.event.endStr ? info.event.endStr : null,
@@ -288,15 +375,18 @@
     if (val) {
       Object.keys(val).forEach((key) => {
         const e = val[key];
+        const color = e.color || catColor(e.category);
         calendar.addEvent({
           id: key,
           title: e.title,
           start: e.start,
           end: e.end || undefined,
           allDay: !!e.allDay,
+          backgroundColor: color,
+          borderColor: color,
+          extendedProps: { category: e.category || "perso" },
         });
       });
     }
-    suppressReload = false;
   });
 })();

@@ -67,7 +67,7 @@ html, body {
   border-color: rgba(77, 214, 193, 0.4);
   color: #d4fff7;
 }
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 /* ---------- Layout ---------- */
 .layout {
@@ -173,6 +173,104 @@ html, body {
 .fc-theme-standard td, .fc-theme-standard th { border-color: var(--border); }
 .fc .fc-daygrid-day-number, .fc .fc-col-header-cell-cushion { color: var(--muted); }
 .fc-event { cursor: pointer; border: none; padding: 1px 4px; font-size: 12px; }
+
+/* ---------- Modal (édition créneau) ---------- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(6, 8, 18, 0.62);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 16px;
+}
+.modal {
+  width: 100%; max-width: 440px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: pop .12s ease-out;
+}
+@keyframes pop { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; border-bottom: 1px solid var(--border);
+}
+.modal-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
+.modal-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 24px; line-height: 1; cursor: pointer; padding: 0 4px;
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 12px; color: var(--muted); font-weight: 500; }
+.modal input[type="text"],
+.modal input[type="date"],
+.modal input[type="time"] {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-family: inherit; font-size: 14px;
+  width: 100%;
+}
+.modal input:focus { outline: none; border-color: var(--accent); }
+.modal input[type="date"]::-webkit-calendar-picker-indicator,
+.modal input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+
+.row-check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.row-check input { width: 16px; height: 16px; accent-color: var(--accent); }
+.row-check span { font-size: 14px; }
+
+.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dt { display: flex; gap: 6px; }
+.dt input[type="time"] { max-width: 92px; }
+.time-grid.allday .dt input[type="time"] { display: none; }
+
+.cat-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 12px; cursor: pointer; font-size: 13px;
+  background: var(--bg-2); color: var(--text);
+}
+.cat-chip .dot { width: 12px; height: 12px; border-radius: 50%; }
+.cat-chip.active { border-color: currentColor; box-shadow: 0 0 0 2px rgba(255,255,255,0.08) inset; }
+
+.modal-foot {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; border-top: 1px solid var(--border);
+}
+.modal-foot .spacer { flex: 1; }
+.btn-primary, .btn-ghost, .btn-danger {
+  border-radius: 10px; padding: 9px 16px; font-size: 14px; font-weight: 500;
+  cursor: pointer; border: 1px solid transparent; font-family: inherit;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
+.btn-ghost:hover { background: var(--panel-2); }
+.btn-danger { background: transparent; border-color: rgba(255,107,129,.5); color: var(--danger); }
+.btn-danger:hover { background: rgba(255,107,129,.12); }
+
+/* ---------- Agenda façon Google (raffinage) ---------- */
+.fc .fc-timegrid-slot { height: 2.4em; }
+.fc .fc-timegrid-now-indicator-line { border-color: var(--danger); }
+.fc .fc-timegrid-now-indicator-arrow { border-color: var(--danger); color: var(--danger); }
+.fc-event {
+  border-radius: 6px;
+  border-left-width: 3px !important;
+  border-left-style: solid !important;
+  font-weight: 500;
+  padding: 2px 5px;
+}
+.fc-event .fc-event-time { font-weight: 600; opacity: .9; }
+.fc .fc-daygrid-event-dot { display: none; }
+.fc-daygrid-event { border-radius: 6px; padding: 1px 5px; }
 
 /* ---------- Footer ---------- */
 .footer {
