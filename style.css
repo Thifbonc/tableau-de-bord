@@ -266,7 +266,10 @@ html, body {
 .btn-danger:hover { background: rgba(255,107,129,.12); }
 
 /* ---------- Agenda façon Google (raffinage) ---------- */
-.fc .fc-timegrid-slot { height: 2.4em; }
+.fc .fc-timegrid-slot { height: 1.7em; }
+.fc .fc-toolbar.fc-header-toolbar { margin-bottom: 0.8em; }
+.fc .fc-toolbar-title { font-size: 15px; }
+.fc .fc-col-header-cell-cushion { font-size: 12px; }
 .fc .fc-timegrid-now-indicator-line { border-color: var(--danger); }
 .fc .fc-timegrid-now-indicator-arrow { border-color: var(--danger); color: var(--danger); }
 .fc-event {

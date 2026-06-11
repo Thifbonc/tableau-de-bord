@@ -357,7 +357,7 @@
     locale: "fr",
     firstDay: 1,
     initialView: "timeGridWeek",
-    height: 600,
+    height: 420,
     nowIndicator: true,
     scrollTime: pad(Math.max(0, new Date().getHours() - 1)) + ":00:00",
     slotLabelFormat: { hour: "2-digit", minute: "2-digit", hour12: false },
